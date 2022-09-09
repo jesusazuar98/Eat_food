@@ -1,6 +1,7 @@
 from cgitb import text
 from tkinter import *
 from main_panel import Panel
+from sing_in import Sign_in
 
 #Creamos la clase grafic
 
@@ -14,11 +15,11 @@ class Login:
 
 
 
-        if self.usu=='root' and self.pas=='root':
+        #if self.usu=='root' and self.pas=='root':
 
-            self.raiz.destroy()
+        self.raiz.destroy()
 
-            self.panel=Panel(self.usu,self.pas)
+        self.panel=Panel(self.usu,self.pas)
 
 
     #Metemos la raiz en el constructor
@@ -62,11 +63,14 @@ class Login:
 
         Label(self.frame_fill,text='Contraseña',font=('Arial',16),fg="grey",bg='#fcfcfc',anchor='w').pack(fill='x',pady=10,padx=10)
         self.password=Entry(self.frame_fill,font=('Arial',16))
-        self.password.pack(fill='x',padx=20,pady=10)
+        self.password.pack(fill='x',padx=20)
         self.password.config(show='*')
 
-        self.inicio=Button(self.frame_fill,text='Iniciar sesion',font=('Arial',18),bg='#C6DCCF',command=self.verificar)
-        self.inicio.pack(fill='x',padx=20,pady=10)
+        self.inicio=Button(self.frame_fill,text='Iniciar sesion',font=('Arial',18),bg='#C6DCCF',command=lambda:self.verificar())
+        self.inicio.pack(padx=20,side='left')
+
+        self.inicio=Button(self.frame_fill,text='Crear cuenta',font=('Arial',18),bg='#C6DCCF',command=lambda:self.crear_cuenta())
+        self.inicio.pack(padx=20,side='right')
         
 
         self.raiz.mainloop()
@@ -91,6 +95,18 @@ class Login:
 
         self.raiz.title('Eat food')
         self.raiz.iconbitmap('images/icono.ico')
+
+
+    def crear_cuenta(self):
+
+        self.raiz.destroy()
+
+        self.sign_in=Sign_in()
+
+        self.log=Login()
+
+
+
 
 
     #Añadir una imagen
