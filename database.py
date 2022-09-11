@@ -9,6 +9,15 @@ class Database:
         self.con=sqlite3.connect('eat_food.db')
         self.cursor=self.con.cursor()
 
+
+    def inicio_session(self,user,pass1):
+        password=hashlib.sha256(pass1.encode('utf-8')).hexdigest()
+
+        sql=f"SELECT COUNT(Name_user) FROM users WHERE Name_user =(?) AND Pass=(?)"
+
+        self.cursor.execute(sql,(user,password))
+
+        return self.cursor.fetchone()[0]
     
     def comprobar_usuario(self,user,pass1,pass2):
 
@@ -21,17 +30,19 @@ class Database:
         num=self.cursor.fetchone()[0]
 
         if num!=0:
-        
+            self.con.close()
+
             return 0
 
         if pass1!=pass2:
+            self.con.close()
+
             return 1
 
         if num==0 and pass1==pass2:
+            self.con.close()
+
             return 2
-    
-        self.con.close()
-    
 
 
     def crear_usuario(self,user,pass1):
@@ -47,38 +58,31 @@ class Database:
 
 
 
-    def all_food(self):
+    def food(self,name):
 
-
-        self.cursor.execute('SELECT * FROM alimentos')
+        self.cursor.execute(f"SELECT Name FROM alimentos WHERE Name LIKE '%{name}%' LIMIT 10")
 
         alimentos=self.cursor.fetchall()
 
 
-        for i in alimentos:
+        alimentos=[i[0] for i in alimentos]
 
-            print(i)
+        self.con.close()
 
-            self.con.close()
+        return alimentos
+
+    def producto(self,name):
+
+        self.cursor.execute(f"SELECT * FROM alimentos WHERE Name='{name}'")
+
+        return self.cursor.fetchone()
+
+
 
 
 # con=sqlite3.connect('eat_food.db')
 
 # cursor=con.cursor()
 
-# sql="""CREATE TABLE users(
-# Id_user INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-# Name_user VARCHAR(50) NOT NULL,
-# Pass VARCHAR(100) NOT NULL,
-# Tall_user REAL,
-# Weight REAL
-
-# );"""
-
-# sql2='DROP TABLE users;'
-
-# sql='ALTER TABLE users MODIFY COLUMN Pass VARCHAR(50)'
-
-# cursor.execute(sql)
-
+# con.commit()
 # con.close()

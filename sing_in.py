@@ -34,7 +34,7 @@ class Sign_in:
         self.password2.pack(fill='x',padx=20,pady=10)
         self.password2.config(show='*')
 
-        self.inicio=Button(self.frame,text='Iniciar sesion',font=('Arial',18),bg='#C6DCCF',command=lambda:self.create_account())
+        self.inicio=Button(self.frame,text='Crear cuenta',font=('Arial',18),bg='#C6DCCF',command=lambda:self.create_account())
         self.inicio.pack(padx=20,pady=20)
 
 
@@ -57,27 +57,34 @@ class Sign_in:
 
         self.data=Database()
 
-        self.com=self.data.comprobar_usuario(self.user.get(),self.password.get(),self.password2.get())
+        if len(self.user.get())<5:
+            messagebox.showinfo(message='El nombre de usuario debe ser mas largo.')
+        
+        if len(self.password.get())<5:
+            messagebox.showinfo(message='La contraseña debe ser mas larga.')
 
-        if self.com==0:
-            messagebox.showinfo(message='El nombre de usuario ya existe intentelo con uno nuevo')
-            self.user.delete(0,END)
-            self.password.delete(0,END)
-            self.password2.delete(0,END)
+        else:
+            self.com=self.data.comprobar_usuario(self.user.get(),self.password.get(),self.password2.get())
+
+            if self.com==0:
+                messagebox.showinfo(message='El nombre de usuario ya existe intentelo con uno nuevo')
+                self.user.delete(0,END)
+                self.password.delete(0,END)
+                self.password2.delete(0,END)
 
 
-        if self.com==1:
-            messagebox.showinfo(message='La contraseña introducida no es la misma, intentelo de nuevo.')
-            self.user.delete(0,END)
-            self.password.delete(0,END)
-            self.password2.delete(0,END)
+            if self.com==1:
+                messagebox.showinfo(message='La contraseña introducida no es la misma, intentelo de nuevo.')
+                self.user.delete(0,END)
+                self.password.delete(0,END)
+                self.password2.delete(0,END)
 
-        if self.com==2:
-            
-            self.data.crear_usuario(self.user.get(),self.password.get())
+            if self.com==2:
+                
+                self.data.crear_usuario(self.user.get(),self.password.get())
 
-            messagebox.showinfo(message='La cuenta se ha creado correctamente ya puede iniciar sesion.')
-            
-            self.raiz.destroy()
+                messagebox.showinfo(message='La cuenta se ha creado correctamente ya puede iniciar sesion.')
+                
+                self.raiz.destroy()
 
 

@@ -1,7 +1,9 @@
 from cgitb import text
 from tkinter import *
+from tkinter import messagebox
 from main_panel import Panel
 from sing_in import Sign_in
+from database import Database
 
 #Creamos la clase grafic
 
@@ -14,12 +16,21 @@ class Login:
         self.pas=self.password.get().replace(' ','')
 
 
+        self.data=Database()
 
-        #if self.usu=='root' and self.pas=='root':
+        conexion=self.data.inicio_session(self.usu, self.pas)
 
-        self.raiz.destroy()
+        if conexion!=0:
+            self.raiz.destroy()
 
-        self.panel=Panel(self.usu,self.pas)
+            self.panel=Panel(self.usu,self.pas)
+
+            self.log=Login()
+        
+        else:
+            
+            messagebox.showinfo(message='El usuario o la contraseña son incorrectos\nIntentelo de nuevo.',title='Fallo al iniciar sesion')
+
 
 
     #Metemos la raiz en el constructor
@@ -69,9 +80,8 @@ class Login:
         self.inicio=Button(self.frame_fill,text='Iniciar sesion',font=('Arial',18),bg='#C6DCCF',command=lambda:self.verificar())
         self.inicio.pack(padx=20,side='left')
 
-        self.inicio=Button(self.frame_fill,text='Crear cuenta',font=('Arial',18),bg='#C6DCCF',command=lambda:self.crear_cuenta())
-        self.inicio.pack(padx=20,side='right')
-        
+        self.crear=Button(self.frame_fill,text='Crear cuenta',font=('Arial',18),bg='#C6DCCF',command=lambda:self.crear_cuenta())
+        self.crear.pack(padx=20,side='right')
 
         self.raiz.mainloop()
 
