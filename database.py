@@ -9,7 +9,7 @@ class Database:
         self.con=sqlite3.connect('eat_food.db')
         self.cursor=self.con.cursor()
 
-
+    #Creacion e inicio de sesion
     def inicio_session(self,user,pass1):
         password=hashlib.sha256(pass1.encode('utf-8')).hexdigest()
 
@@ -56,7 +56,45 @@ class Database:
         self.con.commit()
         self.con.close()
 
+    def change_weigth(self,user,peso):
 
+        sql=f"UPDATE users SET Weight={peso} WHERE Name_user='{user}'"
+
+        self.cursor.execute(sql)
+        self.con.commit()
+        
+
+
+    def change_tall(self,user,tall):
+
+        sql=f"UPDATE users SET Tall_user={tall} WHERE Name_user='{user}'"
+
+        self.cursor.execute(sql)
+        self.con.commit()
+        
+
+
+    def user_data(self,user):
+
+        sql=f"SELECT * FROM users WHERE Name_user='{user}'"
+
+        self.cursor.execute(sql)
+
+        data=self.cursor.fetchone()[1:]
+
+        self.con.close()
+
+        data=["0" if i==None else i for i in data]
+        del data[1]
+
+        
+
+        return data
+
+
+
+
+    #Alimentos
 
     def food(self,name):
 
@@ -83,6 +121,30 @@ class Database:
 # con=sqlite3.connect('eat_food.db')
 
 # cursor=con.cursor()
+
+# sql="DROP TABLE comidas"
+
+# sql="""CREATE TABLE IF NOT EXISTS comidas(
+# id_comida integer auto_increment,
+# id_user integer,
+# id_alimen integer,
+# p_comidas real,
+# kcal_comi real,
+# grasa_comi real,
+# grsatu_comi real,
+# carbo_comi real,
+# azu_comi real,
+# prote_comi real,
+# sal_comi real,
+# fecha date,
+
+# primary key(id_comida,id_user,id_alimen),
+# foreign key(id_user) references users(Id_user),
+# foreign key(id_alimen) references alimentos(Id)
+
+# );"""
+
+# cursor.execute(sql)
 
 # con.commit()
 # con.close()

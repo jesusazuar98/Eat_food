@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
+from tkinter.font import BOLD
+from tkinter.ttk import Separator
 
 from database import Database
 
@@ -95,13 +97,82 @@ class Panel:
         Label(self.frame_principal,text='Hello guys!',bg="#DBDBDB").place(x=self.redimension(self.x_y[0],0.5),y=self.redimension(self.x_y[1],10))
 
 
+    #Metodos vista usuarios
     def user_view(self):
 
         self.frame_principal.destroy()
         self.frame_principal = Frame(self.panel,bg='#DBDBDB',width=self.redimension(self.x_y[0],80),height=self.x_y[1])
         self.frame_principal.pack(side='left',fill='both',expand=True)
         
-        Label(self.frame_principal,text='Hello user!',bg="#DBDBDB").place(x=self.redimension(self.x_y[0],0.5),y=self.redimension(self.x_y[1],10))
+        Label(self.frame_principal,text='MI PERFIL',bg="#DBDBDB",font=('Arial',16)).place(x=self.redimension(self.x_y[0],35),y=self.redimension(self.x_y[1],10))
+
+        data=self.data_user()
+
+        Label(self.frame_principal,text='Nombre de usuario: ',bg="#DBDBDB",font=('Arial',12)).place(x=self.redimension(self.x_y[0],5),y=self.redimension(self.x_y[1],20))
+        self.name_user=Label(self.frame_principal,text=data[0],bg="#DBDBDB",font=('Arial',12,'bold'))
+        self.name_user.place(x=self.redimension(self.x_y[0],20),y=self.redimension(self.x_y[1],20))
+
+
+        Label(self.frame_principal,text='Estatura: ',bg="#DBDBDB",font=('Arial',12)).place(x=self.redimension(self.x_y[0],5),y=self.redimension(self.x_y[1],25))
+        self.tall=Label(self.frame_principal,text=str(data[1])+'cm',bg="#DBDBDB",font=('Arial',12,'bold'))
+        self.tall.place(x=self.redimension(self.x_y[0],12),y=self.redimension(self.x_y[1],25))
+
+
+        Label(self.frame_principal,text='Peso: ',bg="#DBDBDB",font=('Arial',12)).place(x=self.redimension(self.x_y[0],5),y=self.redimension(self.x_y[1],30))
+        self.weigth=Label(self.frame_principal,text=str(data[2])+'k',bg="#DBDBDB",font=('Arial',12,'bold'))
+        self.weigth.place(x=self.redimension(self.x_y[0],12),y=self.redimension(self.x_y[1],30))
+
+
+        Label(self.frame_principal,text='Cambiar estatura: ',bg="#DBDBDB",font=('Arial',12)).place(x=self.redimension(self.x_y[0],5),y=self.redimension(self.x_y[1],40))
+        self.change_tall=Entry(self.frame_principal,font=('Arial',10),width=10)
+        self.change_tall.place(x=self.redimension(self.x_y[0],18),y=self.redimension(self.x_y[1],40))
+
+        Label(self.frame_principal,text='Cambiar peso: ',bg="#DBDBDB",font=('Arial',12)).place(x=self.redimension(self.x_y[0],5),y=self.redimension(self.x_y[1],45))
+        self.change_weigth=Entry(self.frame_principal,font=('Arial',10),width=10)
+        self.change_weigth.place(x=self.redimension(self.x_y[0],18),y=self.redimension(self.x_y[1],45))
+        
+        self.search=Button(self.frame_principal,font=('Arial',10),text='Cambiar',command=lambda:self.change_profile(data[0],self.change_tall.get(),self.change_weigth.get()))
+        self.search.place(x=self.redimension(self.x_y[0],10),y=self.redimension(self.x_y[1],50))
+
+
+    def change_profile(self,user,altura,peso):
+        
+        self.data=Database()
+
+
+
+        if peso=='' and altura=='':
+        
+            messagebox.showinfo(message='Introduce algun valor para cambiar.')
+
+
+        elif altura=='':
+            peso=round(float(peso),2)
+            
+            self.data.change_weigth(user,peso)
+
+            self.user_view()
+
+        elif peso=='':
+            
+            self.data.change_tall(user,altura)
+
+            self.user_view()
+        
+        else:
+            self.data.change_weigth(user,peso)
+            self.data.change_tall(user,altura)
+            self.user_view()
+
+
+
+
+
+    def data_user(self):
+        
+        self.data=Database()
+
+        return self.data.user_data(self.usu)
 
 
 
@@ -115,7 +186,7 @@ class Panel:
 
 
 
-
+    #Metodos vista comida
 
     def food_view(self):
         self.frame_principal.destroy()
@@ -135,8 +206,8 @@ class Panel:
         self.search=Button(self.frame_principal,font=('Arial',10),text='Buscar alimento',command=lambda:self.search_food(self.food.get(),self.list))
         self.search.place(x=self.redimension(self.x_y[0],10),y=self.redimension(self.x_y[1],15))
 
-        self.info_nutri=Text(self.frame_principal,bg='white',width=40)
-        self.info_nutri.place(x=self.redimension(self.x_y[0],40),y=self.redimension(self.x_y[1],15))
+        self.info_nutri=Text(self.frame_principal,bg='white',width=40,height=11)
+        self.info_nutri.place(x=self.redimension(self.x_y[0],40),y=self.redimension(self.x_y[1],25))
 
 
     def search_food(self,input,list):
