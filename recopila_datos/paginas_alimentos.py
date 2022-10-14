@@ -10,10 +10,8 @@ import time
 def main():
 
 
+    for i in range(1):
 
-
-    for i in range(426):
-        print(i)
         html_text = requests.get(f'https://www.fatsecret.es/calor%C3%ADas-nutrici%C3%B3n/search?q=Hacendado&pg={i}').text
 
         soup = BeautifulSoup(html_text,'lxml')

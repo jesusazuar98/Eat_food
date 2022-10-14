@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter.font import BOLD
-from tkinter.ttk import Separator
+import datetime
 
 from database import Database
 
@@ -46,6 +46,7 @@ class Panel:
 
         self.panel.mainloop()
 
+
     #Centrar ventana
     def center_window(self,ancho=1000,largo=600):
         self.screen_x=self.panel.winfo_screenwidth()
@@ -67,6 +68,7 @@ class Panel:
         
         return int(operacion)
 
+
     #Añadir un boton con una imagen
     def boton_image(self,myframe,i_image,x,y,rw,rh,comand,bg='white'):
         self.myimage=PhotoImage(file=i_image)
@@ -85,7 +87,13 @@ class Panel:
         self.image.place(x=x,y=y,relwidth=rw,relheight=rh)
 
 
-    def home_view(self):
+
+
+
+
+
+    #Vista del home
+    def home_view(self,date=datetime.datetime.today()):
 
         if self.posi!=0:
             self.frame_principal.destroy()
@@ -93,11 +101,112 @@ class Panel:
         self.posi+= 1
         self.frame_principal = Frame(self.panel,bg='#DBDBDB',width=self.redimension(self.x_y[0],80),height=self.x_y[1])
         self.frame_principal.pack(side='left',fill='both',expand=True)
+
+
         
-        Label(self.frame_principal,text='Hello guys!',bg="#DBDBDB").place(x=self.redimension(self.x_y[0],0.5),y=self.redimension(self.x_y[1],10))
+        Label(self.frame_principal,text='Tu registro de comidas:',bg="#DBDBDB",font=('Arial',12)).place(relx=0.01,rely=0.1)
+
+        self.boton1=Button(self.frame_principal,font=('Arial',10),text='<',command=lambda:self.cambio_fecha('<',date))
+        self.boton1.place(relx=0.25,rely=0.1)
+
+        self.fecha=Label(self.frame_principal,text=date.strftime('%d/%m/%Y'),font=('Arial',12))
+        self.fecha.place(relx=0.28,rely=0.1)
+
+        self.boton2=Button(self.frame_principal,font=('Arial',10),text='>',command=lambda:self.cambio_fecha('>',date))
+        self.boton2.place(relx=0.39,rely=0.1)
+        
+        try:
+            self.resumen_diario()
+        
+            Label(self.frame_principal,text="Calorías",bg="#C6DCCF",font=('Arial',12)).place(relx=0.2,rely=0.3)
+            Label(self.frame_principal,text="Proteinas",bg="#C6DCCF",font=('Arial',12)).place(relx=0.3,rely=0.3)
+            Label(self.frame_principal,text="Grasas",bg="#C6DCCF",font=('Arial',12)).place(relx=0.4,rely=0.3)
+            Label(self.frame_principal,text="Carbo\nhidratos",bg="#C6DCCF",font=('Arial',12)).place(relx=0.5,rely=0.3)
+            Label(self.frame_principal,text="Azucar",bg="#C6DCCF",font=('Arial',12)).place(relx=0.6,rely=0.3)
 
 
-    #Metodos vista usuarios
+
+            Label(self.frame_principal,text="Desayuno",bg="#DBDBDB",font=('Arial',12)).place(relx=0.01,rely=0.4)
+            Label(self.frame_principal,text="Almuerzo",bg="#DBDBDB",font=('Arial',12)).place(relx=0.01,rely=0.5)
+            Label(self.frame_principal,text="Comida",bg="#DBDBDB",font=('Arial',12)).place(relx=0.01,rely=0.6)
+            Label(self.frame_principal,text="Cena",bg="#DBDBDB",font=('Arial',12)).place(relx=0.01,rely=0.7)
+
+            add_food=Button(self.frame_principal,font=('Arial',10),text='Añadir comida',command=lambda:self.view_add_food(date.strftime('%Y/%m/%d')))
+            add_food.place(relx=0.4,rely=0.8)
+        
+        except:
+
+            Label(self.frame_principal,text="Ha ocurrido un error en la base de datos",bg="#DBDBDB",font=('Arial',30)).place(relx=0.01,rely=0.5)
+
+
+
+    #Cambio de fecha
+    def cambio_fecha(self,ope,fecha):
+
+        if ope=='<':
+
+            fecha=fecha-datetime.timedelta(days=1)
+
+            self.home_view(date=fecha)
+
+        if ope=='>':
+
+            fecha=fecha+datetime.timedelta(days=1)
+
+            self.home_view(date=fecha)
+    
+    def add_food(self,date,alimento,cantidad):
+        
+        data=Database()
+
+        alimento=data.producto(alimento)
+        id=data.id_user(self.usu)
+        
+        valores=[(i*cantidad)/100 for i in alimento[3:]]
+        valores.append(id)
+        valores.append(alimento[0])
+        print(valores)
+
+
+    def view_add_food(self,date):
+        
+        self.frame_principal.destroy()
+        self.frame_principal = Frame(self.panel,bg='#DBDBDB',width=self.redimension(self.x_y[0],80),height=self.x_y[1])
+        self.frame_principal.pack(side='left',fill='both',expand=True)
+
+        lista=Listbox(self.frame_principal,selectmode=SINGLE,widt=30,font=('Arial',10))
+        lista.place(x=self.redimension(self.x_y[0],4),y=self.redimension(self.x_y[1],25))
+
+
+        self.food=Entry(self.frame_principal,font=('Arial',10),width=30)
+        self.food.place(x=self.redimension(self.x_y[0],4),y=self.redimension(self.x_y[1],10))
+
+        self.search=Button(self.frame_principal,font=('Arial',10),text='Buscar alimento',command=lambda:self.search_food(self.food.get(),lista))
+        self.search.place(x=self.redimension(self.x_y[0],10),y=self.redimension(self.x_y[1],15))
+
+        self.enviar=Button(self.frame_principal,font=('Arial',10),text='Añadir',command=lambda:self.add_food(date,lista.get(lista.curselection()[0]),50))
+        self.enviar.place(x=self.redimension(self.x_y[0],10),y=self.redimension(self.x_y[1],80))
+
+
+
+
+
+
+
+    def resumen_diario(self):
+
+        pass
+
+
+
+
+
+
+
+
+
+
+    #Vista usuarios
     def user_view(self):
 
         self.frame_principal.destroy()
@@ -135,6 +244,7 @@ class Panel:
         self.search.place(x=self.redimension(self.x_y[0],10),y=self.redimension(self.x_y[1],50))
 
 
+    #Cambiar datos del perfil
     def change_profile(self,user,altura,peso):
         
         self.data=Database()
@@ -164,10 +274,7 @@ class Panel:
             self.data.change_tall(user,altura)
             self.user_view()
 
-
-
-
-
+    #Datos del usuario
     def data_user(self):
         
         self.data=Database()
@@ -182,12 +289,7 @@ class Panel:
 
 
 
-
-
-
-
     #Metodos vista comida
-
     def food_view(self):
         self.frame_principal.destroy()
         self.frame_principal = Frame(self.panel,bg='#DBDBDB',width=self.redimension(self.x_y[0],80),height=self.x_y[1])
@@ -210,23 +312,26 @@ class Panel:
         self.info_nutri.place(x=self.redimension(self.x_y[0],40),y=self.redimension(self.x_y[1],25))
 
 
+    #Buscar alimentos
     def search_food(self,input,list):
 
-        self.data=Database()
+        data=Database()
 
-        productos=self.data.food(input)
+        productos=data.food(input)
         
 
         for i in range(len(productos)):
             list.insert(i,productos[i])
 
+
+    #Datos del alimento seleccionado de la lista
     def seleccion_item(self):
         try:
             posi=self.list.curselection()[0]
 
-            self.data=Database()
+            data=Database()
             
-            valores_nutricionales=self.data.producto(self.list.get(posi))
+            valores_nutricionales=data.producto(self.list.get(posi))
 
             text=f"""{valores_nutricionales[1].upper()}
 

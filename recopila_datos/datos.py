@@ -50,6 +50,7 @@ def save_data(url):
     soup = BeautifulSoup(html_text,'lxml')
 
     name_food=soup.find('h1').text
+    marca_food=soup.find('h2').text.lower()
 
 
     food=soup.find('td', class_="factPanel")
@@ -60,7 +61,7 @@ def save_data(url):
     elementos=food.find_all('div',class_="nutrient black left tRight w2")
     elementos=elementos[1:]
     elementos=[i.text.replace('g','').replace('-','0') for i in elementos]
-    elementos.insert(0,name_food.translate(str.maketrans({'á':'a','é':'e','í':'i','ó':'o','ú':'u'})))
+    elementos.insert(0,name_food.translate(str.maketrans({'á':'a','é':'e','í':'i','ó':'o','ú':'u'}))+" ("+marca_food+")")
     elementos.insert(1,value_portion.replace('g','').replace(' ','').replace('ml',''))
     elementos.insert(2,kcal.replace('kcal','').replace(' ',''))
 
@@ -72,8 +73,8 @@ def save_data(url):
 
 
     
-    
-    insertar_txt(valores)
+    print(valores)
+    #insertar_txt(valores)
 
 
 
